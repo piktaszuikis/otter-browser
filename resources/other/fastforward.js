@@ -91,8 +91,8 @@
 		//check for location/href
 		var url = parseUrl(links[i]);
 
-		score += calculateScoreForValues(url.pathname, hrefTokens, HREF_SCORE)
-		score += calculateScoreForValues(url.query, hrefTokens, HREF_SCORE)
+		score += calculateScoreForValues(url.pathname, hrefTokens, HREF_SCORE);
+		score += calculateScoreForValues(url.query, hrefTokens, HREF_SCORE);
 
 		//Is link worthy?
 		if (score > THRESHOLD)
