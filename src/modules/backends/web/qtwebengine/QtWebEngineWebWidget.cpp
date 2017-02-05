@@ -40,6 +40,7 @@
 #include "../../../../ui/SearchEnginePropertiesDialog.h"
 #include "../../../../ui/SourceViewerWebWidget.h"
 #include "../../../../ui/WebsitePreferencesDialog.h"
+#include "../../fastforward/UglyFastForwardProofOfConcept.h"
 
 #include <QtCore/QEventLoop>
 #include <QtCore/QFileInfo>
@@ -677,7 +678,30 @@ void QtWebEngineWebWidget::triggerAction(int identifier, const QVariantMap &para
 
 			return;
 		case ActionsManager::FastForwardAction:
-			m_page->history()->goToItem(m_page->history()->itemAt(m_page->history()->count() - 1));
+
+			if(canGoForward())
+			{
+				m_page->triggerAction(QWebEnginePage::Forward);
+			}
+			else
+			{
+				QString script = UglyFastForwardProofOfConcept::getInstance()->getFastForwardLinkScript();
+
+				m_webView->page()->runJavaScript(script, [&](const QVariant &href)
+				{
+					QString link = href.toString();
+					if(!link.isEmpty())
+					{
+						QUrl url = QUrl(link);
+						if(url.isRelative()){
+							url = m_webView->url().resolved(url);
+						}
+
+						setUrl(url);
+					}
+				});
+
+			}
 
 			return;
 		case ActionsManager::StopAction:
@@ -1696,6 +1720,31 @@ bool QtWebEngineWebWidget::canGoBack() const
 bool QtWebEngineWebWidget::canGoForward() const
 {
 	return m_page->history()->canGoForward();
+}
+
+bool QtWebEngineWebWidget::canGoFastForward() const
+{
+	if(canGoForward())
+		return true;
+	QString script = UglyFastForwardProofOfConcept::getInstance()->getHasFastForwardScript();
+	bool result = false;
+
+	/*
+	DOES NOT WORK.
+	QEventLoop eventLoop;
+	m_webView->page()->runJavaScript(script, [&](const QVariant &canGoForward)
+	{
+		qDebug("4");
+		result = canGoForward.toBool();
+		eventLoop.quit();
+	});
+
+	connect(this, SIGNAL(aboutToReload()), &eventLoop, SLOT(quit()));
+	connect(this, SIGNAL(destroyed()), &eventLoop, SLOT(quit()));
+	eventLoop.exec();
+	*/
+
+	return result;
 }
 
 bool QtWebEngineWebWidget::canShowContextMenu(const QPoint &position) const

@@ -49,6 +49,7 @@
 #include "../../../../ui/SearchEnginePropertiesDialog.h"
 #include "../../../../ui/SourceViewerWebWidget.h"
 #include "../../../../ui/WebsitePreferencesDialog.h"
+#include "../../fastforward/UglyFastForwardProofOfConcept.h"
 
 #include <QtCore/QDataStream>
 #include <QtCore/QFileInfo>
@@ -1350,7 +1351,24 @@ void QtWebKitWebWidget::triggerAction(int identifier, const QVariantMap &paramet
 
 			return;
 		case ActionsManager::FastForwardAction:
-			m_webView->page()->history()->goToItem(m_webView->page()->history()->itemAt(m_webView->page()->history()->count() - 1));
+			if(canGoForward())
+			{
+				m_webView->page()->triggerAction(QWebPage::Forward);
+			}
+			else
+			{
+				QString script = UglyFastForwardProofOfConcept::getInstance()->getFastForwardLinkScript();
+				QString link = m_webView->page()->mainFrame()->evaluateJavaScript(script).toString();
+				if(!link.isEmpty())
+				{
+					QUrl url = QUrl(link);
+					if(url.isRelative()){
+						url = m_webView->url().resolved(url);
+					}
+
+					setUrl(url);
+				}
+			}
 
 			return;
 		case ActionsManager::StopAction:
@@ -2603,6 +2621,15 @@ bool QtWebKitWebWidget::canGoBack() const
 bool QtWebKitWebWidget::canGoForward() const
 {
 	return m_webView->history()->canGoForward();
+}
+
+bool QtWebKitWebWidget::canGoFastForward() const
+{
+	if(canGoForward())
+		return true;
+
+	QString script = UglyFastForwardProofOfConcept::getInstance()->getHasFastForwardScript();
+	return m_webView->page()->mainFrame()->evaluateJavaScript(script).toBool();
 }
 
 bool QtWebKitWebWidget::canShowContextMenu(const QPoint &position) const

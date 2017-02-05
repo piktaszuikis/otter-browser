@@ -645,7 +645,7 @@ void WebWidget::updateNavigationActions()
 
 	if (m_actions.contains(ActionsManager::FastForwardAction))
 	{
-		m_actions[ActionsManager::FastForwardAction]->setEnabled(canGoForward());
+		m_actions[ActionsManager::FastForwardAction]->setEnabled(canGoFastForward());
 	}
 
 	if (m_actions.contains(ActionsManager::StopAction))
@@ -1742,6 +1742,11 @@ bool WebWidget::canGoBack() const
 bool WebWidget::canGoForward() const
 {
 	return false;
+}
+
+bool WebWidget::canGoFastForward() const
+{
+	return true;// canGoForward();
 }
 
 bool WebWidget::canShowContextMenu(const QPoint &position) const

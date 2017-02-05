@@ -143,5 +143,7 @@
         <file>searches/wikipedia.xml</file>
         <file>searches/yahoo.xml</file>
         <file>searches/youtube.xml</file>
+        <file>other/fastforward.ini</file>
+        <file>other/fastforward.js</file>
     </qresource>
 </RCC>

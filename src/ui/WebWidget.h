@@ -259,6 +259,7 @@ protected:
 	bool calculateCheckedState(int identifier, const QVariantMap &parameters = QVariantMap());
 	virtual bool canGoBack() const;
 	virtual bool canGoForward() const;
+	virtual bool canGoFastForward() const;
 	virtual bool canShowContextMenu(const QPoint &position) const;
 	virtual bool canViewSource() const;
 	virtual bool isInspecting() const;
