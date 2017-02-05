@@ -1357,17 +1357,10 @@ void QtWebKitWebWidget::triggerAction(int identifier, const QVariantMap &paramet
 			}
 			else
 			{
-				QString script = UglyFastForwardProofOfConcept::getInstance()->getFastForwardLinkScript();
-				QString link = m_webView->page()->mainFrame()->evaluateJavaScript(script).toString();
+				QString link = m_webView->page()->mainFrame()->evaluateJavaScript(UglyFastForwardProofOfConcept::getInstance()->getFastForwardLinkScript()).toString();
 				if (!link.isEmpty())
 				{
-					QUrl url = QUrl(link);
-					if (url.isRelative())
-					{
-						url = m_webView->url().resolved(url);
-					}
-
-					setUrl(url);
+					setUrl(link);
 				}
 			}
 

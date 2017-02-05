@@ -104,10 +104,10 @@
 			{
 				if (DEBUG)
 				{
-					console.log('FastForward DEBUG: Found at least one link for FastForward. Score:', score);
+					console.log('FastForward DEBUG: Found at least one link for FastForward. Score:', score, links[i].href);
 				}
 
-				return links[i].href;
+				return true;
 			}
 		}
 	}
@@ -129,7 +129,10 @@
 			console.log('FastForward DEBUG: Choosing link with score', scoredLinks[0].score, scoredLinks[0].link.href);
 		}
 
-		return scoredLinks[0].link.href;
+		var absoluteLink = document.createElement('a');
+		absoluteLink.href = scoredLinks[0].link.href;
+
+		return absoluteLink.href;
 	}
 
 	if (DEBUG)

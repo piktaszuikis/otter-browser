@@ -685,20 +685,12 @@ void QtWebEngineWebWidget::triggerAction(int identifier, const QVariantMap &para
 			}
 			else
 			{
-				QString script = UglyFastForwardProofOfConcept::getInstance()->getFastForwardLinkScript();
-
-				m_webView->page()->runJavaScript(script, [&](const QVariant &href)
+				m_webView->page()->runJavaScript(UglyFastForwardProofOfConcept::getInstance()->getFastForwardLinkScript(), [&](const QVariant &href)
 				{
 					QString link = href.toString();
 					if (!link.isEmpty())
 					{
-						QUrl url = QUrl(link);
-						if (url.isRelative())
-						{
-							url = m_webView->url().resolved(url);
-						}
-
-						setUrl(url);
+						setUrl(link);
 					}
 				});
 
