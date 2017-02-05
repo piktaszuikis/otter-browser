@@ -679,7 +679,7 @@ void QtWebEngineWebWidget::triggerAction(int identifier, const QVariantMap &para
 			return;
 		case ActionsManager::FastForwardAction:
 
-			if(canGoForward())
+			if (canGoForward())
 			{
 				m_page->triggerAction(QWebEnginePage::Forward);
 			}
@@ -690,10 +690,11 @@ void QtWebEngineWebWidget::triggerAction(int identifier, const QVariantMap &para
 				m_webView->page()->runJavaScript(script, [&](const QVariant &href)
 				{
 					QString link = href.toString();
-					if(!link.isEmpty())
+					if (!link.isEmpty())
 					{
 						QUrl url = QUrl(link);
-						if(url.isRelative()){
+						if (url.isRelative())
+						{
 							url = m_webView->url().resolved(url);
 						}
 
@@ -1724,7 +1725,7 @@ bool QtWebEngineWebWidget::canGoForward() const
 
 bool QtWebEngineWebWidget::canFastForward() const
 {
-	if(canGoForward())
+	if (canGoForward())
 		return true;
 	QString script = UglyFastForwardProofOfConcept::getInstance()->getHasFastForwardScript();
 	bool result = false;

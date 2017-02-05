@@ -1,5 +1,6 @@
-#include <QFile>
 #include <QDir>
+#include <QDebug>
+#include <QFile>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -26,20 +27,20 @@ QString serializeGroup(Settings &settings, QString groupName, int defaultWeight)
 	QStringList keys = settings.getKeys();
 
 	QJsonArray array;
-	for(int i = 0; i < keys.length(); i++)
+	for (int i = 0; i < keys.length(); ++i)
 	{
-		QVariant weight = settings.getValue(keys[i]);
+		QVariant weight = settings.getValue(keys.at(i));
 		weight.convert(QVariant::Int);
 
-		if(weight.isNull())
+		if (weight.isNull())
 		{
 			weight.setValue(defaultWeight);
 		}
 
 		QJsonObject item
 		{
-			{ "value", keys[i].toUpper() },
-			{ "score", weight.toInt() },
+			{ QLatin1Literal("value"), keys.at(i).toUpper() },
+			{ QLatin1Literal("score"), weight.toInt() },
 		};
 
 		array.append(item);
@@ -52,7 +53,7 @@ QString serializeGroup(Settings &settings, QString groupName, int defaultWeight)
 
 UglyFastForwardProofOfConcept *Otter::UglyFastForwardProofOfConcept::getInstance()
 {
-	if(!m_instance)
+	if (!m_instance)
 	{
 		m_instance = new UglyFastForwardProofOfConcept();
 	}
@@ -62,43 +63,23 @@ UglyFastForwardProofOfConcept *Otter::UglyFastForwardProofOfConcept::getInstance
 
 QString UglyFastForwardProofOfConcept::getScript()
 {
-	if(m_script.isEmpty())
+	if (m_script.isEmpty())
 	{
-		//I'm sure there is a better way to read ini file from ~/.config/otter
-		QString iniFile = SessionsManager::getProfilePath() + QDir::separator() + QLatin1String("fastforward.ini");
-		if(!QFile(iniFile).exists()){
-			QFile(SessionsManager::getReadableDataPath(QLatin1String("fastforward.ini"))).copy(iniFile);
-		}
-
-		Settings settings(iniFile);
-		QJsonObject options;
-
-		settings.beginGroup(QLatin1String("Fast forward"));
-		options.insert("threshold", settings.getValue("Threshold", QVariant(10)).toInt());
-		options.insert("relScore", settings.getValue("RelScore", QVariant(10)).toInt());
-		options.insert("debug", settings.getValue("Debug", QVariant(10)).toBool());
-		settings.endGroup();
-
-		QString hrefs = serializeGroup(settings, QLatin1String("Href"), 1);
-		QString classes = serializeGroup(settings, QLatin1String("Class"), 10);
-		QString ids = serializeGroup(settings, QLatin1String("Id"), 11);
-		QString texts = serializeGroup(settings, QLatin1String("Text"), 100);
-
 		QString jsFilePath = SessionsManager::getReadableDataPath(QLatin1String("fastforward.js"));
+		QString iniFile = SessionsManager::getReadableDataPath(QLatin1String("fastforward.ini"));
+		Settings settings(iniFile);
 
 		QFile jsFile(jsFilePath);
-		if(jsFile.open(QFile::ReadOnly))
+		if (jsFile.open(QFile::ReadOnly))
 		{
 			QString js = jsFile.readAll();
 
 			m_script = js
-				.replace(QLatin1String("%options%"), QJsonDocument(options).toJson(QJsonDocument::Compact))
-				.replace(QLatin1String("%hrefTokens%"), hrefs)
-				.replace(QLatin1String("%classTokens%"), classes)
-				.replace(QLatin1String("%idTokens%"), ids)
-				.replace(QLatin1String("%textTokens%"), texts)
+				.replace(QLatin1String("{hrefTokens}"), serializeGroup(settings, QLatin1String("Href"), 1))
+				.replace(QLatin1String("{classTokens}"), serializeGroup(settings, QLatin1String("Class"), 10))
+				.replace(QLatin1String("{idTokens}"), serializeGroup(settings, QLatin1String("Id"), 11))
+				.replace(QLatin1String("{textTokens}"), serializeGroup(settings, QLatin1String("Text"), 100))
 			;
-			//qDebug() << m_script;
 		}
 
 	}
@@ -108,27 +89,21 @@ QString UglyFastForwardProofOfConcept::getScript()
 
 QString UglyFastForwardProofOfConcept::getHasFastForwardScript()
 {
-	if(m_hasFastForward.isEmpty()){
-		m_hasFastForward = getScript();
-
-		if(!m_hasFastForward.isEmpty())
-		{
-			m_hasFastForward.append(QLatin1String(".hasFastForward()"));
-		}
+	if (m_hasFastForward.isEmpty())
+	{
+		m_hasFastForward = getScript().replace(QLatin1String("{isSelectTheBestLink}"), QLatin1String("false"));
 	}
+
+	qDebug() << m_hasFastForward;
 
 	return m_hasFastForward;
 }
 
 QString UglyFastForwardProofOfConcept::getFastForwardLinkScript()
 {
-	if(m_fastForwardLink.isEmpty()){
-		m_fastForwardLink = getScript();
-
-		if(!m_fastForwardLink.isEmpty())
-		{
-			m_fastForwardLink.append(QLatin1String(".getFastForward()"));
-		}
+	if (m_fastForwardLink.isEmpty())
+	{
+		m_fastForwardLink = getScript().replace(QLatin1String("{isSelectTheBestLink}"), QLatin1String("true"));
 	}
 
 	return m_fastForwardLink;

@@ -1,12 +1,15 @@
-(function(options, hrefTokens, classTokens, idTokens, textTokens){
+(function(isSelectTheBestLink, hrefTokens, classTokens, idTokens, textTokens) {
+	const REL_SCORE = 9000;
+	const THRESHOLD = 10;
+	const DEBUG = false;
 
-	function parseUrl(link){
+	function parseUrl(link) {
 		var result = {
 			pathname: link.pathname.split('/'),
 			query: []
 		};
 
-		if(link.search) {
+		if (link.search) {
 			var query = link.search.substr(1).split('&');
 			query.every(function(item) {
 				result.query.push(item.split('=')[0]);
@@ -18,7 +21,7 @@
 
 	function join() {
 		result = ''
-		for(var i = arguments.length - 1; i >= 0; i--) {
+		for (var i = arguments.length - 1; i >= 0; --i) {
 			result += arguments[i] + ' ';
 		}
 		
@@ -28,9 +31,9 @@
 	function calculateScore(value, tokens) {
 		var score = 0;
 
-		if(value) {
-			for(var i = tokens.length - 1; i >= 0; i--) {
-				if(value.indexOf(tokens[i].value) != -1) {
+		if (value) {
+			for (var i = tokens.length - 1; i >= 0; --i) {
+				if (value.indexOf(tokens[i].value) != -1) {
 					score += tokens[i].score;
 				}
 			}
@@ -42,8 +45,8 @@
 	function calculateScoreForValues(values, tokens) {
 		var score = 0;
 
-		if(values && values.length > 0) {
-			for(var i = values.length - 1; i >= 0; i--) {
+		if (values && values.length > 0) {
+			for(var i = values.length - 1; i >= 0; --i) {
 				score += calculateScore(values[i].toUpperCase(), tokens);
 			}
 		}
@@ -51,71 +54,63 @@
 		return score;
 	}
 	
-	function getFastForward(isAny) {
-		var links = document.querySelectorAll('a:not([href^="javascript:"]):not([href="#"])')
-		var scoredLinks = [];
-		
-		if(options.debug)
-			console.log("FastForward DEBUG: Checking", links.length, "links");
 
-		for(var i = links.length - 1; i >= 0; i--){
-			var score = 0;
-			var link = links[i];
-			
-			//check for rel
-			if(link.rel && link.rel.indexOf('next') != -1)
-				score += options.relScore;
+	var links = document.querySelectorAll('a:not([href^="javascript:"]):not([href="#"])')
+	var scoredLinks = [];
 
-			//check for innerText, aria-label and alt
-			var linkText = join(link.innerText, link.getAttribute('aria-label'), link.getAttribute('alt'), link.title).toUpperCase();
-			score += calculateScore(linkText, textTokens);
+	if (DEBUG)
+		console.log("FastForward DEBUG: Checking", links.length, "links");
 
-			//check for id
-			score += calculateScore(link.id.toUpperCase(), idTokens);
+	for (var i = links.length - 1; i >= 0; --i) {
+		var score = 0;
+		var link = links[i];
 
-			//check for class
-			score += calculateScoreForValues(link.classList, classTokens);
+		//check for rel
+		if (link.rel && link.rel.indexOf('next') != -1)
+			score += REL_SCORE;
 
-			//check for location/href
-			var url = parseUrl(link);
-			score += calculateScoreForValues(url.pathname, hrefTokens)
-			score += calculateScoreForValues(url.query, hrefTokens)
+		//check for innerText, aria-label and alt
+		var linkText = join(link.innerText, link.getAttribute('aria-label'), link.getAttribute('alt'), link.title).toUpperCase();
+		score += calculateScore(linkText, textTokens);
 
-			//Is link worthy?
-			if(score > options.threshold){
-				if(isAny) {
-					if(options.debug)
-						console.log("FastForward DEBUG: Found at least one link for FastForward. Score:", score);
-					return link.href;
-				} else {
-					scoredLinks.push({score: score, link: link});
-				}
-				
+		//check for id
+		score += calculateScore(link.id.toUpperCase(), idTokens);
+
+		//check for class
+		score += calculateScoreForValues(link.classList, classTokens);
+
+		//check for location/href
+		var url = parseUrl(link);
+		score += calculateScoreForValues(url.pathname, hrefTokens)
+		score += calculateScoreForValues(url.query, hrefTokens)
+
+		//Is link worthy?
+		if (score > THRESHOLD) {
+			if (isSelectTheBestLink) {
+				scoredLinks.push({score: score, link: link});
+			} else {
+				if (DEBUG)
+					console.log("FastForward DEBUG: Found at least one link for FastForward. Score:", score);
+				return link.href;
 			}
 		}
+	}
 
-		if(scoredLinks.length > 0) {
-			scoredLinks.sort(function(a, b){return b.score - a.score});
+	if (scoredLinks.length > 0) {
+		scoredLinks.sort(function(a, b) {return b.score - a.score});
 
-			if(options.debug) {
-				for(var i = 0; i < scoredLinks.length; i++)
-					console.log("FastForward DEBUG: ", scoredLinks[i].score, "Url:", scoredLinks[i].link.outerHTML);
-				
-				console.log("FastForward DEBUG: Choosing link with score", scoredLinks[0].score, scoredLinks[0].link.href);
-			}
+		if (DEBUG) {
+			for (var i = 0; i < scoredLinks.length; i++)
+				console.log("FastForward DEBUG: ", scoredLinks[i].score, "Url:", scoredLinks[i].link.outerHTML);
 
-			return scoredLinks[0].link.href;
-		} else if(options.debug) {
-			console.log("FastForward DEBUG: No candidate links found!");
+			console.log("FastForward DEBUG: Choosing link with score", scoredLinks[0].score, scoredLinks[0].link.href);
 		}
-		
-		return null;
+
+		return scoredLinks[0].link.href;
+	} else if (DEBUG) {
+		console.log("FastForward DEBUG: No candidate links found!");
 	}
-	
-	
-	return {
-		hasFastForward : function() { return !!getFastForward(false) },
-		getFastForward : function() { return getFastForward(false) }
-	}
-	
-})(%options%, %hrefTokens%, %classTokens%, %idTokens%, %textTokens%)
+
+	return null;
+
+})({isSelectTheBestLink}, {hrefTokens}, {classTokens}, {idTokens}, {textTokens})
