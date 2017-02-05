@@ -51,7 +51,7 @@
 
 		if (values && values.length > 0)
 		{
-			for(var i = (values.length - 1); i >= 0; --i)
+			for (var i = (values.length - 1); i >= 0; --i)
 			{
 				score += calculateScore(values[i].toUpperCase(), tokens, defaultScore);
 			}
@@ -71,7 +71,6 @@
 	for (var i = (links.length - 1); i >= 0; --i)
 	{
 		var score = 0;
-		var link = links[i];
 
 		//check for rel
 		if (links[i].rel && links[i].rel.indexOf('next') !== -1)
