@@ -30,6 +30,7 @@ QString serializeGroup(Settings &settings, QString groupName, int defaultWeight)
 	for (int i = 0; i < keys.length(); ++i)
 	{
 		QVariant weight = settings.getValue(keys.at(i));
+
 		weight.convert(QVariant::Int);
 
 		if (weight.isNull())
@@ -93,8 +94,6 @@ QString UglyFastForwardProofOfConcept::getHasFastForwardScript()
 	{
 		m_hasFastForward = getScript().replace(QLatin1String("{isSelectTheBestLink}"), QLatin1String("false"));
 	}
-
-	qDebug() << m_hasFastForward;
 
 	return m_hasFastForward;
 }
