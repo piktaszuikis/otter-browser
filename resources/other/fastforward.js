@@ -80,7 +80,7 @@
 		}
 
 		//check for innerText, aria-label and alt
-		score += calculateScore(Array.prototype.join.call([links[i].innerText, links[i].getAttribute('aria-label'), links[i].getAttribute('alt'), links[i].title], ' ').toUpperCase(), textTokens, TEXT_SCORE);
+		score += calculateScore([links[i].innerText, links[i].getAttribute('aria-label'), links[i].getAttribute('alt'), links[i].title].join(' ').toUpperCase(), textTokens, TEXT_SCORE);
 
 		//check for id
 		score += calculateScore(links[i].id.toUpperCase(), idTokens, ID_SCORE);
