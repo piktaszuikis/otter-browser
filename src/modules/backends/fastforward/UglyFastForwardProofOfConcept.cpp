@@ -1,3 +1,23 @@
+/**************************************************************************
+* Otter Browser: Web browser controlled by the user, not vice-versa.
+* Copyright (C) 2017 Michal Dutkiewicz aka Emdek <michal@emdek.pl>
+* Copyright (C) 2017 Piktas Zuikis <piktas.zuikis@inbox.lt>
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*
+**************************************************************************/
+
 #include <QDir>
 #include <QDebug>
 #include <QFile>
@@ -20,7 +40,7 @@ UglyFastForwardProofOfConcept::UglyFastForwardProofOfConcept(QObject *parent)
 
 }
 
-QString serializeGroup(Settings &settings, QString groupName, int defaultWeight)
+QString serializeGroup(Settings &settings, QString groupName)
 {
 	settings.beginGroup(groupName);
 
@@ -29,19 +49,10 @@ QString serializeGroup(Settings &settings, QString groupName, int defaultWeight)
 	QJsonArray array;
 	for (int i = 0; i < keys.length(); ++i)
 	{
-		QVariant weight = settings.getValue(keys.at(i));
-
-		weight.convert(QVariant::Int);
-
-		if (weight.isNull())
-		{
-			weight.setValue(defaultWeight);
-		}
-
 		QJsonObject item
 		{
 			{ QLatin1Literal("value"), keys.at(i).toUpper() },
-			{ QLatin1Literal("score"), weight.toInt() },
+			{ QLatin1Literal("score"), settings.getValue(keys.at(i)).toInt() },
 		};
 
 		array.append(item);
@@ -76,10 +87,10 @@ QString UglyFastForwardProofOfConcept::getScript()
 			QString js = jsFile.readAll();
 
 			m_script = js
-				.replace(QLatin1String("{hrefTokens}"), serializeGroup(settings, QLatin1String("Href"), 1))
-				.replace(QLatin1String("{classTokens}"), serializeGroup(settings, QLatin1String("Class"), 10))
-				.replace(QLatin1String("{idTokens}"), serializeGroup(settings, QLatin1String("Id"), 11))
-				.replace(QLatin1String("{textTokens}"), serializeGroup(settings, QLatin1String("Text"), 100))
+				.replace(QLatin1String("{hrefTokens}"), serializeGroup(settings, QLatin1String("Href")))
+				.replace(QLatin1String("{classTokens}"), serializeGroup(settings, QLatin1String("Class")))
+				.replace(QLatin1String("{idTokens}"), serializeGroup(settings, QLatin1String("Id")))
+				.replace(QLatin1String("{textTokens}"), serializeGroup(settings, QLatin1String("Text")))
 			;
 		}
 
@@ -92,7 +103,7 @@ QString UglyFastForwardProofOfConcept::getHasFastForwardScript()
 {
 	if (m_hasFastForward.isEmpty())
 	{
-		m_hasFastForward = getScript().replace(QLatin1String("{isSelectTheBestLink}"), QLatin1String("false"));
+		m_hasFastForward = getScript().replace(QLatin1String("{isSelectingTheBestLink}"), QLatin1String("false"));
 	}
 
 	return m_hasFastForward;
@@ -102,7 +113,7 @@ QString UglyFastForwardProofOfConcept::getFastForwardLinkScript()
 {
 	if (m_fastForwardLink.isEmpty())
 	{
-		m_fastForwardLink = getScript().replace(QLatin1String("{isSelectTheBestLink}"), QLatin1String("true"));
+		m_fastForwardLink = getScript().replace(QLatin1String("{isSelectingTheBestLink}"), QLatin1String("true"));
 	}
 
 	return m_fastForwardLink;
