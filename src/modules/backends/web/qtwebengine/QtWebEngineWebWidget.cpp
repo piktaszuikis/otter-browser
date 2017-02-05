@@ -1722,7 +1722,7 @@ bool QtWebEngineWebWidget::canGoForward() const
 	return m_page->history()->canGoForward();
 }
 
-bool QtWebEngineWebWidget::canGoFastForward() const
+bool QtWebEngineWebWidget::canFastForward() const
 {
 	if(canGoForward())
 		return true;

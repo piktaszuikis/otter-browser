@@ -2623,7 +2623,7 @@ bool QtWebKitWebWidget::canGoForward() const
 	return m_webView->history()->canGoForward();
 }
 
-bool QtWebKitWebWidget::canGoFastForward() const
+bool QtWebKitWebWidget::canFastForward() const
 {
 	if(canGoForward())
 		return true;

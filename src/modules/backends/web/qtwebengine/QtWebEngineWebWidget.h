@@ -94,7 +94,7 @@ protected:
 	QDateTime getLastUrlClickTime() const;
 	bool canGoBack() const;
 	bool canGoForward() const;
-	bool canGoFastForward() const;
+	bool canFastForward() const;
 	bool canShowContextMenu(const QPoint &position) const;
 	bool canViewSource() const;
 	bool isScrollBar(const QPoint &position) const;
