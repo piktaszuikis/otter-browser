@@ -43,8 +43,6 @@ private:
 
 	static UglyFastForwardProofOfConcept *m_instance;
 	QString m_script;
-	QString m_hasFastForward;
-	QString m_fastForwardLink;
 };
 
 }

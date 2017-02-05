@@ -101,22 +101,12 @@ QString UglyFastForwardProofOfConcept::getScript()
 
 QString UglyFastForwardProofOfConcept::getHasFastForwardScript()
 {
-	if (m_hasFastForward.isEmpty())
-	{
-		m_hasFastForward = getScript().replace(QLatin1String("{isSelectingTheBestLink}"), QLatin1String("false"));
-	}
-
-	return m_hasFastForward;
+	return getScript().replace(QLatin1String("{isSelectingTheBestLink}"), QLatin1String("false"));
 }
 
 QString UglyFastForwardProofOfConcept::getFastForwardLinkScript()
 {
-	if (m_fastForwardLink.isEmpty())
-	{
-		m_fastForwardLink = getScript().replace(QLatin1String("{isSelectingTheBestLink}"), QLatin1String("true"));
-	}
-
-	return m_fastForwardLink;
+	return getScript().replace(QLatin1String("{isSelectingTheBestLink}"), QLatin1String("true"));
 }
 
 }
