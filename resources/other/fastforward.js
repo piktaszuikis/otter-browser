@@ -8,25 +8,6 @@
 	const THRESHOLD = 10;
 	const DEBUG = false;
 
-	function parseUrl(link)
-	{
-		var result = {
-			pathname: link.pathname.split('/'),
-			query: []
-		};
-
-		if (link.search)
-		{
-			var query = link.search.substr(1).split('&');
-			query.every(function(item)
-			{
-				result.query.push(item.split('=')[0]);
-			});
-		}
-
-		return result;
-	}
-
 	function calculateScore(value, tokens, defaultScore)
 	{
 		var score = 0;
@@ -35,7 +16,7 @@
 		{
 			for (var i = (tokens.length - 1); i >= 0; --i)
 			{
-				if (value.indexOf(tokens[i].value) !== -1)
+				if (value.indexOf(tokens[i].value) != -1)
 				{
 					score += tokens[i].score || defaultScore;
 				}
@@ -72,7 +53,7 @@
 	{
 		var score = 0;
 
-		if (links[i].rel && links[i].rel.indexOf('next') !== -1)
+		if (links[i].rel && links[i].rel.indexOf('next') != -1)
 		{
 			score += REL_SCORE;
 		}
@@ -81,10 +62,17 @@
 		score += calculateScore(links[i].id.toUpperCase(), idTokens, ID_SCORE);
 		score += calculateScoreForValues(links[i].classList, classTokens, CLASS_SCORE);
 
-		var url = parseUrl(links[i]);
+		var url = links[i].pathname.split('/');
 
-		score += calculateScoreForValues(url.pathname, hrefTokens, HREF_SCORE);
-		score += calculateScoreForValues(url.query, hrefTokens, HREF_SCORE);
+		if (links[i].search)
+		{
+			links[i].search.substr(1).split('&').every(function(item)
+			{
+				url.push(item.split('=')[0]);
+			});
+		}
+
+		score += calculateScoreForValues(url, hrefTokens, HREF_SCORE);
 
 		//Is link worthy?
 		if (score > THRESHOLD)
