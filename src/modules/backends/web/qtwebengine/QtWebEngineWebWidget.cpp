@@ -678,23 +678,19 @@ void QtWebEngineWebWidget::triggerAction(int identifier, const QVariantMap &para
 			return;
 		case ActionsManager::FastForwardAction:
 
-			if (canGoForward())
+			m_webView->page()->runJavaScript(getFastForwardScript(true), [&](const QVariant &href)
 			{
-				m_page->triggerAction(QWebEnginePage::Forward);
-			}
-			else
-			{
-				m_webView->page()->runJavaScript(getFastForwardScript(true), [&](const QVariant &href)
+				const QUrl url = href.toUrl();
+
+				if (url.isValid())
 				{
-					const QUrl url = href.toUrl();
-
-					if (url.isValid())
-					{
-						setUrl(url);
-					}
-				});
-
-			}
+					setUrl(url);
+				}
+				else if (canGoForward())
+				{
+					m_page->triggerAction(QWebEnginePage::Forward);
+				}
+			});
 
 			return;
 		case ActionsManager::StopAction:

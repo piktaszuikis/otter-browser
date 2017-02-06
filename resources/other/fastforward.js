@@ -6,7 +6,6 @@
 	const CLASS_SCORE = 10;
 	const HREF_SCORE = 1;
 	const THRESHOLD = 10;
-	const DEBUG = false;
 
 	function calculateScore(value, tokens, defaultScore)
 	{
@@ -16,9 +15,9 @@
 		{
 			for (var i = (tokens.length - 1); i >= 0; --i)
 			{
-				if (value.indexOf(tokens[i].value) != -1)
+				if (value.indexOf(tokens[i].value) > -1)
 				{
-					score += tokens[i].score || defaultScore;
+					score += (tokens[i].score || defaultScore);
 				}
 			}
 		}
@@ -44,16 +43,11 @@
 	var links = document.querySelectorAll('a:not([href^="javascript:"]):not([href="#"])');
 	var scoredLinks = [];
 
-	if (DEBUG)
-	{
-		console.log('FastForward DEBUG: Checking', links.length, 'links');
-	}
-
 	for (var i = (links.length - 1); i >= 0; --i)
 	{
 		var score = 0;
 
-		if (links[i].rel && links[i].rel.indexOf('next') != -1)
+		if (links[i].rel && links[i].rel.indexOf('next') > -1)
 		{
 			score += REL_SCORE;
 		}
@@ -74,7 +68,6 @@
 
 		score += calculateScoreForValues(url, hrefTokens, HREF_SCORE);
 
-		//Is link worthy?
 		if (score > THRESHOLD)
 		{
 			if (isSelectingTheBestLink)
@@ -83,11 +76,6 @@
 			}
 			else
 			{
-				if (DEBUG)
-				{
-					console.log('FastForward DEBUG: Found at least one link for FastForward. Score:', score, links[i].href);
-				}
-
 				return true;
 			}
 		}
@@ -100,25 +88,10 @@
 			return (second.score - first.score);
 		});
 
-		if (DEBUG)
-		{
-			for (var i = 0; i < scoredLinks.length; ++i)
-			{
-				console.log('FastForward DEBUG: ', scoredLinks[i].score, 'Url:', scoredLinks[i].link.outerHTML);
-			}
-
-			console.log('FastForward DEBUG: Choosing link with score', scoredLinks[0].score, scoredLinks[0].link.href);
-		}
-
 		var link = document.createElement('a');
 		link.href = scoredLinks[0].link.href;
 
 		return link.href;
-	}
-
-	if (DEBUG)
-	{
-		console.log('FastForward DEBUG: No candidate links found!');
 	}
 
 	return null;

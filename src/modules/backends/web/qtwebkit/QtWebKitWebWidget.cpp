@@ -1350,17 +1350,16 @@ void QtWebKitWebWidget::triggerAction(int identifier, const QVariantMap &paramet
 
 			return;
 		case ActionsManager::FastForwardAction:
-			if (canGoForward())
-			{
-				m_webView->page()->triggerAction(QWebPage::Forward);
-			}
-			else
 			{
 				const QUrl url = m_webView->page()->mainFrame()->evaluateJavaScript(getFastForwardScript(true)).toUrl();
 
 				if (url.isValid())
 				{
 					setUrl(url);
+				}
+				else if (canGoForward())
+				{
+					m_webView->page()->triggerAction(QWebPage::Forward);
 				}
 			}
 
