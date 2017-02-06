@@ -1356,11 +1356,11 @@ void QtWebKitWebWidget::triggerAction(int identifier, const QVariantMap &paramet
 			}
 			else
 			{
-				QUrl link = m_webView->page()->mainFrame()->evaluateJavaScript(getFastForwardScript(true)).toUrl();
+				const QUrl url = m_webView->page()->mainFrame()->evaluateJavaScript(getFastForwardScript(true)).toUrl();
 
-				if (link.isValid())
+				if (url.isValid())
 				{
-					setUrl(link);
+					setUrl(url);
 				}
 			}
 

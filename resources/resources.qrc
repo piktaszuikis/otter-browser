@@ -130,6 +130,8 @@
         <file>menu/webWidget.json</file>
         <file>mouse/default.ini</file>
         <file>other/contentBlocking.json</file>
+        <file>other/fastforward.ini</file>
+        <file>other/fastforward.js</file>
         <file>other/handlers.ini</file>
         <file>other/notifications.ini</file>
         <file>other/syntaxHighlighting.json</file>
@@ -143,7 +145,5 @@
         <file>searches/wikipedia.xml</file>
         <file>searches/yahoo.xml</file>
         <file>searches/youtube.xml</file>
-        <file>other/fastforward.ini</file>
-        <file>other/fastforward.js</file>
     </qresource>
 </RCC>

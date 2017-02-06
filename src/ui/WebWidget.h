@@ -313,6 +313,7 @@ private:
 	int m_reloadTimer;
 
 	static QString m_fastForwardScript;
+
 signals:
 	void aboutToNavigate();
 	void aboutToReload();

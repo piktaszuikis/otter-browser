@@ -1544,7 +1544,6 @@ QString WebWidget::getFastForwardScript(bool isSelectingTheBestLink)
 	return QString(m_fastForwardScript).replace(QLatin1String("{isSelectingTheBestLink}"), QLatin1String(isSelectingTheBestLink ? "true" : "false"));
 }
 
-
 QString WebWidget::getActiveStyleSheet() const
 {
 	return QString();

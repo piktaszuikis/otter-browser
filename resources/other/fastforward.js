@@ -72,22 +72,15 @@
 	{
 		var score = 0;
 
-		//check for rel
 		if (links[i].rel && links[i].rel.indexOf('next') !== -1)
 		{
 			score += REL_SCORE;
 		}
 
-		//check for innerText, aria-label and alt
 		score += calculateScore([links[i].innerText, links[i].getAttribute('aria-label'), links[i].getAttribute('alt'), links[i].title].join(' ').toUpperCase(), textTokens, TEXT_SCORE);
-
-		//check for id
 		score += calculateScore(links[i].id.toUpperCase(), idTokens, ID_SCORE);
-
-		//check for class
 		score += calculateScoreForValues(links[i].classList, classTokens, CLASS_SCORE);
 
-		//check for location/href
 		var url = parseUrl(links[i]);
 
 		score += calculateScoreForValues(url.pathname, hrefTokens, HREF_SCORE);
