@@ -680,7 +680,7 @@ void QtWebEngineWebWidget::triggerAction(int identifier, const QVariantMap &para
 
 			m_webView->page()->runJavaScript(getFastForwardScript(true), [&](const QVariant &href)
 			{
-				const QUrl url = href.toUrl();
+				const QUrl url(href.toUrl());
 
 				if (url.isValid())
 				{
