@@ -49,7 +49,6 @@
 #include "../../../../ui/SearchEnginePropertiesDialog.h"
 #include "../../../../ui/SourceViewerWebWidget.h"
 #include "../../../../ui/WebsitePreferencesDialog.h"
-#include "../../fastforward/UglyFastForwardProofOfConcept.h"
 
 #include <QtCore/QDataStream>
 #include <QtCore/QFileInfo>
@@ -1357,8 +1356,9 @@ void QtWebKitWebWidget::triggerAction(int identifier, const QVariantMap &paramet
 			}
 			else
 			{
-				QString link = m_webView->page()->mainFrame()->evaluateJavaScript(UglyFastForwardProofOfConcept::getInstance()->getFastForwardLinkScript()).toString();
-				if (!link.isEmpty())
+				QUrl link = m_webView->page()->mainFrame()->evaluateJavaScript(getFastForwardScript(true)).toUrl();
+
+				if (link.isValid())
 				{
 					setUrl(link);
 				}
@@ -2620,10 +2620,11 @@ bool QtWebKitWebWidget::canGoForward() const
 bool QtWebKitWebWidget::canFastForward() const
 {
 	if (canGoForward())
+	{
 		return true;
+	}
 
-	QString script = UglyFastForwardProofOfConcept::getInstance()->getHasFastForwardScript();
-	return m_webView->page()->mainFrame()->evaluateJavaScript(script).toBool();
+	return m_webView->page()->mainFrame()->evaluateJavaScript(getFastForwardScript(false)).toBool();
 }
 
 bool QtWebKitWebWidget::canShowContextMenu(const QPoint &position) const

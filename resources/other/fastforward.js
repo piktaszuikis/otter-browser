@@ -129,10 +129,10 @@
 			console.log('FastForward DEBUG: Choosing link with score', scoredLinks[0].score, scoredLinks[0].link.href);
 		}
 
-		var absoluteLink = document.createElement('a');
-		absoluteLink.href = scoredLinks[0].link.href;
+		var link = document.createElement('a');
+		link.href = scoredLinks[0].link.href;
 
-		return absoluteLink.href;
+		return link.href;
 	}
 
 	if (DEBUG)

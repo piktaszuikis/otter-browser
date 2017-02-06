@@ -3,6 +3,7 @@
 * Copyright (C) 2013 - 2017 Michal Dutkiewicz aka Emdek <michal@emdek.pl>
 * Copyright (C) 2015 Piotr Wójcik <chocimier@tlen.pl>
 * Copyright (C) 2015 Jan Bajer aka bajasoft <jbajer@gmail.com>
+* Copyright (C) 2017 Piktas Zuikis <piktas.zuikis@inbox.lt>
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -251,6 +252,7 @@ protected:
 	void setClickPosition(const QPoint &position);
 	Action* getExistingAction(int identifier);
 	QString suggestSaveFileName(SaveFormat format) const;
+	static QString getFastForwardScript(bool isSelectingTheBestLink);
 	HitTestResult getCurrentHitTestResult() const;
 	virtual QList<SpellCheckManager::DictionaryInformation> getDictionaries() const;
 	PermissionPolicy getPermission(FeaturePermission feature, const QUrl &url) const;
@@ -310,6 +312,7 @@ private:
 	int m_loadingTimer;
 	int m_reloadTimer;
 
+	static QString m_fastForwardScript;
 signals:
 	void aboutToNavigate();
 	void aboutToReload();

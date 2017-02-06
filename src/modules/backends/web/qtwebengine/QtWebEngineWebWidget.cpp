@@ -40,7 +40,6 @@
 #include "../../../../ui/SearchEnginePropertiesDialog.h"
 #include "../../../../ui/SourceViewerWebWidget.h"
 #include "../../../../ui/WebsitePreferencesDialog.h"
-#include "../../fastforward/UglyFastForwardProofOfConcept.h"
 
 #include <QtCore/QEventLoop>
 #include <QtCore/QFileInfo>
@@ -685,10 +684,11 @@ void QtWebEngineWebWidget::triggerAction(int identifier, const QVariantMap &para
 			}
 			else
 			{
-				m_webView->page()->runJavaScript(UglyFastForwardProofOfConcept::getInstance()->getFastForwardLinkScript(), [&](const QVariant &href)
+				m_webView->page()->runJavaScript(getFastForwardScript(true), [&](const QVariant &href)
 				{
-					QString link = href.toString();
-					if (!link.isEmpty())
+					QUrl link = href.toUrl();
+
+					if (link.isValid())
 					{
 						setUrl(link);
 					}
@@ -1718,16 +1718,17 @@ bool QtWebEngineWebWidget::canGoForward() const
 bool QtWebEngineWebWidget::canFastForward() const
 {
 	if (canGoForward())
+	{
 		return true;
-	QString script = UglyFastForwardProofOfConcept::getInstance()->getHasFastForwardScript();
+	}
+
 	bool result = false;
 
 	/*
-	DOES NOT WORK.
+	//DOES NOT WORK.
 	QEventLoop eventLoop;
-	m_webView->page()->runJavaScript(script, [&](const QVariant &canGoForward)
+	m_webView->page()->runJavaScript(getFastForwardScript(false), [&](const QVariant &canGoForward)
 	{
-		qDebug("4");
 		result = canGoForward.toBool();
 		eventLoop.quit();
 	});
